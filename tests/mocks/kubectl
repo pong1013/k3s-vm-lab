@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+kubeconfig=""
+args=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --kubeconfig)
+      kubeconfig="$2"
+      shift 2
+      ;;
+    --kubeconfig=*)
+      kubeconfig="${1#*=}"
+      shift
+      ;;
+    --context)
+      shift 2
+      ;;
+    *)
+      args+=("$1")
+      shift
+      ;;
+  esac
+done
+
+if [[ "${args[*]}" == *"config view"* && "${args[*]}" == *"certificate-authority-data"* ]]; then
+  echo "Q0E="
+elif [[ "${args[*]}" == *"config view"* && "${args[*]}" == *"client-certificate-data"* ]]; then
+  echo "Q0VSVA=="
+elif [[ "${args[*]}" == *"config view"* && "${args[*]}" == *"client-key-data"* ]]; then
+  echo "S0VZ"
+elif [[ "${args[*]}" == config\ set-cluster* ]]; then
+  echo "cluster" >> "${kubeconfig}"
+elif [[ "${args[*]}" == config\ set-credentials* ]]; then
+  echo "user" >> "${kubeconfig}"
+elif [[ "${args[*]}" == config\ set-context* ]]; then
+  echo "context" >> "${kubeconfig}"
+elif [[ "${args[*]}" == config\ use-context* ]]; then
+  exit 0
+elif [[ "${args[*]}" == config\ view* ]]; then
+  echo "apiVersion: v1"
+  echo "kind: Config"
+elif [[ "${args[*]}" == wait* ]]; then
+  exit 0
+elif [[ "${args[*]}" == get\ nodes* ]]; then
+  echo "NAME STATUS"
+else
+  exit 0
+fi

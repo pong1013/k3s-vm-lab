@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+TARGET="${BASH_SOURCE[0]}"
+while [[ -L "${TARGET}" ]]; do
+  DIR="$(cd -P "$(dirname "${TARGET}")" >/dev/null 2>&1 && pwd)"
+  TARGET="$(readlink "${TARGET}")"
+  [[ "${TARGET}" != /* ]] && TARGET="${DIR}/${TARGET}"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "${TARGET}")" >/dev/null 2>&1 && pwd)"
+
+source "${SCRIPT_DIR}/modules/log.sh"
+source "${SCRIPT_DIR}/modules/paths.sh"
+source "${SCRIPT_DIR}/modules/validate.sh"
+source "${SCRIPT_DIR}/modules/prompt.sh"
+source "${SCRIPT_DIR}/modules/host.sh"
+source "${SCRIPT_DIR}/modules/deps.sh"
+source "${SCRIPT_DIR}/modules/chien_dev.sh"
+source "${SCRIPT_DIR}/modules/ssh.sh"
+source "${SCRIPT_DIR}/modules/k3s.sh"
+source "${SCRIPT_DIR}/modules/kubeconfig.sh"
+source "${SCRIPT_DIR}/modules/fake_gpu.sh"
+source "${SCRIPT_DIR}/modules/report.sh"
+source "${SCRIPT_DIR}/modules/cleanup.sh"
+source "${SCRIPT_DIR}/modules/help.sh"
+source "${SCRIPT_DIR}/commands/doctor.sh"
+source "${SCRIPT_DIR}/commands/build.sh"
+source "${SCRIPT_DIR}/commands/status.sh"
+source "${SCRIPT_DIR}/commands/report.sh"
+source "${SCRIPT_DIR}/commands/destroy.sh"
+
+command="${1:-help}"
+
+case "${command}" in
+  doctor)
+    do_doctor "${@:2}"
+    ;;
+  build)
+    do_build "${@:2}"
+    ;;
+  status)
+    do_status "${@:2}"
+    ;;
+  report)
+    do_report "${@:2}"
+    ;;
+  destroy)
+    do_destroy "${@:2}"
+    ;;
+  help|-h|--help)
+    print_help
+    ;;
+  *)
+    log_error "Unknown command: ${command}"
+    print_help
+    exit 1
+    ;;
+esac

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+last="${@: -1}"
+
+case "${last}" in
+  "true")
+    exit 0
+    ;;
+  *"node-token"*)
+    echo "mock-token"
+    ;;
+  *"k3s.yaml"*)
+    cat <<'EOF'
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    certificate-authority-data: Q0E=
+    server: https://127.0.0.1:6443
+  name: default
+contexts:
+- context:
+    cluster: default
+    user: default
+  name: default
+current-context: default
+users:
+- name: default
+  user:
+    client-certificate-data: Q0VSVA==
+    client-key-data: S0VZ
+EOF
+    ;;
+  *"k3s --version"*)
+    echo "k3s version v1.30.0+k3s1"
+    ;;
+  *"agent --node-name"*)
+    if [[ "${MOCK_FAIL_WORKER_INSTALL:-false}" == "true" ]]; then
+      echo "mock worker install failure" >&2
+      exit 42
+    fi
+    exit 0
+    ;;
+  *)
+    exit 0
+    ;;
+esac
