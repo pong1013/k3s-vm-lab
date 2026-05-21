@@ -14,14 +14,14 @@ syntax:
 	@find scripts tests -type f \( -name '*.sh' -o -name 'k3s-vm-lab' \) -print0 | xargs -0 -n1 bash -n
 
 test: syntax
-	@./tests/mock_build_test.sh
-	@./tests/mock_failure_cleanup_test.sh
-	@./tests/incomplete_cluster_test.sh
-	@./tests/cluster_index_test.sh
-	@./tests/custom_resources_test.sh
-	@./tests/safe_destroy_test.sh
-	@./tests/fake_gpu_failure_test.sh
-	@./tests/fake_gpu_wait_test.sh
+	@./tests/integration/mock_build_test.sh
+	@./tests/integration/mock_failure_cleanup_test.sh
+	@./tests/integration/incomplete_cluster_test.sh
+	@./tests/integration/cluster_index_test.sh
+	@./tests/integration/custom_resources_test.sh
+	@./tests/integration/safe_destroy_test.sh
+	@./tests/integration/fake_gpu_failure_test.sh
+	@./tests/integration/fake_gpu_wait_test.sh
 
 %:
 	@:
