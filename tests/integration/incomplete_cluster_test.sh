@@ -42,7 +42,7 @@ if [[ "${status}" -eq 0 ]]; then
 fi
 grep -q "Cluster directory already exists" "${TMP_DIR}/build.out"
 
-printf 'y\n' | "${ROOT_DIR}/scripts/k3s-vm-lab" destroy stale-lab >"${TMP_DIR}/destroy.out"
+printf 'y\n' | "${ROOT_DIR}/scripts/k3s-vm-lab" delete stale-lab >"${TMP_DIR}/delete.out"
 test ! -e "${cluster_dir}"
 
 echo "incomplete cluster test passed"

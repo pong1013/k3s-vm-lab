@@ -48,7 +48,7 @@ grep -q "Cluster directory already exists" "${TMP_DIR}/build-again.out"
 {
   printf 'y\n'
   printf 'y\n'
-} | "${ROOT_DIR}/scripts/k3s-vm-lab" destroy indexed-lab >"${TMP_DIR}/destroy.out"
+} | "${ROOT_DIR}/scripts/k3s-vm-lab" delete indexed-lab >"${TMP_DIR}/delete.out"
 
 test ! -e "${cluster_dir}"
 test ! -e "${index_file}"

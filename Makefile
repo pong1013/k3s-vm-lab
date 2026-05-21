@@ -2,12 +2,12 @@ SHELL := /bin/bash
 FIRST_GOAL := $(firstword $(MAKECMDGOALS))
 EXTRA_GOALS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
-.PHONY: k3s-vm-lab doctor build status report destroy test syntax
+.PHONY: k3s-vm-lab doctor build status report start stop delete destroy test syntax
 
 k3s-vm-lab:
 	@./scripts/k3s-vm-lab $(EXTRA_GOALS)
 
-doctor build status report destroy:
+doctor build status report start stop delete destroy:
 	@if [ "$(FIRST_GOAL)" = "$@" ]; then ./scripts/k3s-vm-lab $@ $(filter-out $@,$(MAKECMDGOALS)); fi
 
 syntax:

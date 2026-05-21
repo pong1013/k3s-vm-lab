@@ -60,7 +60,7 @@ collect_build_inputs() {
 
   cluster_dir="$(cluster_dir_for "${CLUSTER_NAME}")"
   if [[ -e "${cluster_dir}" ]]; then
-    die "Cluster directory already exists: ${cluster_dir}. Refusing to build '${CLUSTER_NAME}'. Run 'make k3s-vm-lab destroy ${CLUSTER_NAME}' or clean up the stale directory before building again."
+    die "Cluster directory already exists: ${cluster_dir}. Refusing to build '${CLUSTER_NAME}'. Run 'make k3s-vm-lab delete ${CLUSTER_NAME}' or clean up the stale directory before building again."
   fi
 
   if find_cluster_index_by_name "${CLUSTER_NAME}"; then
@@ -72,7 +72,7 @@ collect_build_inputs() {
         die "Build cancelled. Accept stale index cleanup for '${CLUSTER_NAME}' or choose another name."
       fi
     else
-      die "Cluster '${CLUSTER_NAME}' is already recorded in $(cluster_index_file) with status '${INDEX_STATUS}' at ${INDEX_CLUSTER_DIR}. Destroy it first or use another name."
+      die "Cluster '${CLUSTER_NAME}' is already recorded in $(cluster_index_file) with status '${INDEX_STATUS}' at ${INDEX_CLUSTER_DIR}. Delete it first or use another name."
     fi
   fi
 

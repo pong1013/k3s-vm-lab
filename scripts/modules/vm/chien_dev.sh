@@ -58,6 +58,14 @@ stop_vm_node() {
   fi
 }
 
+start_vm_node() {
+  local name="$1"
+  if multipass info "${name}" >/dev/null 2>&1; then
+    log_info "Starting VM node ${name}"
+    multipass start "${name}"
+  fi
+}
+
 delete_vm_node() {
   local name="$1"
   if multipass info "${name}" >/dev/null 2>&1; then

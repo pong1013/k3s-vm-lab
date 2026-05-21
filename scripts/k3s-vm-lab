@@ -45,6 +45,15 @@ case "${command}" in
   report)
     do_report "${@:2}"
     ;;
+  start)
+    do_start "${@:2}"
+    ;;
+  stop)
+    do_stop "${@:2}"
+    ;;
+  delete)
+    do_delete "${@:2}"
+    ;;
   destroy)
     do_destroy "${@:2}"
     ;;

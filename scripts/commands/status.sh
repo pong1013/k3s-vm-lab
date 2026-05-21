@@ -8,7 +8,7 @@ load_cluster_env() {
   env_file="$(cluster_env_for "${cluster_name}")"
   if [[ ! -f "${env_file}" ]]; then
     if [[ -d "${cluster_dir}" ]]; then
-      die "Cluster '${cluster_name}' is incomplete: missing ${env_file}. Run 'make k3s-vm-lab destroy ${cluster_name}' to clean it, then build again."
+      die "Cluster '${cluster_name}' is incomplete: missing ${env_file}. Run 'make k3s-vm-lab delete ${cluster_name}' to clean it, then build again."
     fi
     die "Cluster '${cluster_name}' not found. Expected ${env_file}"
   fi
@@ -86,6 +86,13 @@ do_status() {
   done < "${nodes_file}"
 
   echo ""
+  case "${BUILD_STATUS}" in
+    stopped|stopping|starting|deleting|destroy-stopped)
+      log_info "Cluster status is ${BUILD_STATUS}; skipping Kubernetes status."
+      return 0
+      ;;
+  esac
+
   if has_command kubectl; then
     kubectl --context "${KUBE_CONTEXT}" get nodes -o wide || true
   else

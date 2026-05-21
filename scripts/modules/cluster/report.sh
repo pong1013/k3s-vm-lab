@@ -84,7 +84,9 @@ render_report() {
     echo "kubectl get nodes -o wide"
     echo "kubectl get pods -A"
     echo "k3s-vm-lab status ${CLUSTER_NAME}"
-    echo "k3s-vm-lab destroy ${CLUSTER_NAME}"
+    echo "k3s-vm-lab start ${CLUSTER_NAME}"
+    echo "k3s-vm-lab stop ${CLUSTER_NAME}"
+    echo "k3s-vm-lab delete ${CLUSTER_NAME}"
     echo '```'
   } > "${report_file}"
 }
@@ -134,7 +136,9 @@ print_report_terminal() {
   echo "kubectl get nodes -o wide"
   echo "kubectl get pods -A"
   echo "make k3s-vm-lab status ${CLUSTER_NAME}"
-  echo "make k3s-vm-lab destroy ${CLUSTER_NAME}"
+  echo "make k3s-vm-lab start ${CLUSTER_NAME}"
+  echo "make k3s-vm-lab stop ${CLUSTER_NAME}"
+  echo "make k3s-vm-lab delete ${CLUSTER_NAME}"
   echo ""
   log_info "Markdown report: $(report_file_for "${cluster_name}")"
 }

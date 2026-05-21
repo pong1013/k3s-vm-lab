@@ -26,7 +26,9 @@ make k3s-vm-lab doctor
 make k3s-vm-lab build my-lab
 make k3s-vm-lab status my-lab
 make k3s-vm-lab report my-lab
-make k3s-vm-lab destroy my-lab
+make k3s-vm-lab start my-lab
+make k3s-vm-lab stop my-lab
+make k3s-vm-lab delete my-lab
 ```
 
 During `build`, the CLI asks for:
@@ -85,9 +87,15 @@ Node names are deterministic:
 
 The build shows host CPU, RAM, and free disk before resource selection. It checks the sum of all node resources before creating VMs and reserves at least `2 CPU + 4G RAM + 20G disk` for the host.
 
-## Destroy Safety
+## Start, Stop, and Delete Safety
 
-`destroy` is staged. For a ready cluster, it first asks to stop VM nodes and records `destroy-stopped`. It then asks again before deleting VM nodes, purging Multipass, backing up `~/.kube/config`, removing only the kube context/cluster/user recorded in the k3s-vm-lab index, and removing generated files. If you cancel the second confirmation, rerun `destroy <cluster-name>` later to resume deletion.
+`start` starts stopped cluster VM nodes and waits for Kubernetes nodes to become Ready.
+
+`stop` pauses the cluster VM nodes and records `stopped`. It keeps generated files, the cluster index entry, and kubeconfig entries intact.
+
+`delete` permanently deletes VM nodes, purges Multipass deleted instances, backs up `~/.kube/config`, removes only the kube context/cluster/user recorded in the k3s-vm-lab index, removes the index entry, and removes generated files.
+
+`destroy` is kept as an alias for `delete`.
 
 ## Generated Files
 
