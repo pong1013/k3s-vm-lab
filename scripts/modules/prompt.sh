@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 
 print_header() {
-  echo "=============================================="
-  echo " k3s-vm-lab | VM-backed local k3s lab"
-  echo "=============================================="
+  paint cyan "=============================================="
+  echo ""
+  paint bold " k3s-vm-lab | VM-backed local k3s lab"
+  echo ""
+  paint cyan "=============================================="
+  echo ""
 }
 
 prompt_text() {
@@ -12,10 +15,10 @@ prompt_text() {
   local answer
 
   if [[ -n "${default}" ]]; then
-    read -r -p "${prompt} [${default}]: " answer
+    read -r -p "$(paint cyan "${prompt}") (default=${default}): " answer
     echo "${answer:-${default}}"
   else
-    read -r -p "${prompt}: " answer
+    read -r -p "$(paint cyan "${prompt}"): " answer
     echo "${answer}"
   fi
 }
@@ -27,18 +30,19 @@ prompt_choice() {
   local i
   local choice
 
-  echo "${prompt}" >&2
+  paint cyan "${prompt}" >&2
+  echo "" >&2
   for ((i=0; i<${#options[@]}; i++)); do
     echo "  $((i+1))) ${options[$i]}" >&2
   done
 
   while true; do
-    read -r -p "Enter option number: " choice >&2
+    read -r -p "$(paint cyan "Enter option number" 2): " choice >&2
     if [[ "${choice}" =~ ^[0-9]+$ ]] && (( choice >= 1 && choice <= ${#options[@]} )); then
       echo "${options[$((choice-1))]}"
       return
     fi
-    echo "Invalid option, please try again." >&2
+    printf "%s\n" "$(paint yellow "Invalid option, please try again." 2)" >&2
   done
 }
 
@@ -48,10 +52,10 @@ prompt_yes_no() {
   local answer
 
   if [[ "${default}" == "y" ]]; then
-    read -r -p "${prompt} [Y/n]: " answer
+    read -r -p "$(paint cyan "${prompt}") [Y/n]: " answer
     answer="${answer:-Y}"
   else
-    read -r -p "${prompt} [y/N]: " answer
+    read -r -p "$(paint cyan "${prompt}") [y/N]: " answer
     answer="${answer:-N}"
   fi
 

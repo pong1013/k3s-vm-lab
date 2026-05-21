@@ -14,7 +14,7 @@ mkdir -p "${cluster_dir}"
 touch "${cluster_dir}/build.log"
 
 "${ROOT_DIR}/scripts/k3s-vm-lab" status >"${TMP_DIR}/status-list.out"
-grep -q "stale-lab (incomplete) - missing cluster.env" "${TMP_DIR}/status-list.out"
+grep -q "stale-lab.*incomplete.*missing cluster.env" "${TMP_DIR}/status-list.out"
 
 set +e
 "${ROOT_DIR}/scripts/k3s-vm-lab" status stale-lab >"${TMP_DIR}/status.out" 2>&1
@@ -40,7 +40,7 @@ if [[ "${status}" -eq 0 ]]; then
   echo "expected build to refuse incomplete directory" >&2
   exit 1
 fi
-grep -q "Incomplete cluster directory exists" "${TMP_DIR}/build.out"
+grep -q "Cluster directory already exists" "${TMP_DIR}/build.out"
 
 printf 'y\n' | "${ROOT_DIR}/scripts/k3s-vm-lab" destroy stale-lab >"${TMP_DIR}/destroy.out"
 test ! -e "${cluster_dir}"

@@ -6,8 +6,10 @@ write_cluster_env() {
   env_file="$(cluster_env_for "${cluster_name}")"
 
   {
+    printf "CLUSTER_ID=%q\n" "${CLUSTER_ID}"
     printf "CLUSTER_NAME=%q\n" "${CLUSTER_NAME}"
     printf "OS_VERSION=%q\n" "${OS_VERSION}"
+    printf "TOTAL_NODE_COUNT=%q\n" "${TOTAL_NODE_COUNT}"
     printf "WORKER_COUNT=%q\n" "${WORKER_COUNT}"
     printf "RESOURCE_PROFILE=%q\n" "${RESOURCE_PROFILE}"
     printf "SERVER_NAME=%q\n" "${SERVER_NAME}"
@@ -52,9 +54,12 @@ render_report() {
     echo "# k3s-vm-lab Report: ${CLUSTER_NAME}"
     echo ""
     echo "- Build status: ${BUILD_STATUS}"
+    echo "- Cluster ID: ${CLUSTER_ID:-unknown}"
     echo "- Created at: ${CREATED_AT}"
     echo "- OS version: Ubuntu ${OS_VERSION}"
-    echo "- Resource profile: ${RESOURCE_PROFILE}"
+    echo "- Total nodes: ${TOTAL_NODE_COUNT}"
+    echo "- Worker nodes: ${WORKER_COUNT}"
+    echo "- Resource mode: ${RESOURCE_PROFILE}"
     echo "- k3s version: ${K3S_VERSION:-unknown}"
     echo "- Kube context: ${KUBE_CONTEXT}"
     echo "- Kubeconfig: ${HOME}/.kube/config"
@@ -82,4 +87,54 @@ render_report() {
     echo "k3s-vm-lab destroy ${CLUSTER_NAME}"
     echo '```'
   } > "${report_file}"
+}
+
+print_report_terminal() {
+  local cluster_name="$1"
+  local nodes_file
+  local node_name
+  local role
+  local ip
+  local cpus
+  local memory
+  local disk
+
+  load_cluster_env "${cluster_name}"
+  nodes_file="$(nodes_file_for "${cluster_name}")"
+
+  paint bold "k3s-vm-lab report: ${CLUSTER_NAME}"
+  echo ""
+  printf "%-18s %s\n" "Status:" "${BUILD_STATUS}"
+  printf "%-18s %s\n" "Cluster ID:" "${CLUSTER_ID:-unknown}"
+  printf "%-18s %s\n" "Created:" "${CREATED_AT}"
+  printf "%-18s Ubuntu %s\n" "OS:" "${OS_VERSION}"
+  printf "%-18s %s total / %s workers\n" "Nodes:" "${TOTAL_NODE_COUNT}" "${WORKER_COUNT}"
+  printf "%-18s %s\n" "k3s:" "${K3S_VERSION:-unknown}"
+  printf "%-18s %s\n" "Context:" "${KUBE_CONTEXT}"
+  printf "%-18s %s\n" "Kubeconfig:" "${HOME}/.kube/config"
+  printf "%-18s %s\n" "Backup:" "${KUBECONFIG_BACKUP}"
+  printf "%-18s %s\n" "Local copy:" "${KUBECONFIG_PATH}"
+  printf "%-18s %s\n" "fake GPU:" "${FAKE_GPU_STATUS}"
+
+  echo ""
+  paint bold "Nodes"
+  echo ""
+  printf "%-28s %-8s %-15s %-6s %-8s %-8s\n" "NAME" "ROLE" "IP" "CPU" "RAM" "DISK"
+  printf "%-28s %-8s %-15s %-6s %-8s %-8s\n" "----------------------------" "--------" "---------------" "------" "--------" "--------"
+  if [[ -f "${nodes_file}" ]]; then
+    while IFS=$'\t' read -r node_name role ip cpus memory disk; do
+      printf "%-28s %-8s %-15s %-6s %-8s %-8s\n" "${node_name}" "${role}" "${ip}" "${cpus}" "${memory}" "${disk}"
+    done < "${nodes_file}"
+  fi
+
+  echo ""
+  paint bold "Useful commands"
+  echo ""
+  echo "kubectl config use-context ${KUBE_CONTEXT}"
+  echo "kubectl get nodes -o wide"
+  echo "kubectl get pods -A"
+  echo "make k3s-vm-lab status ${CLUSTER_NAME}"
+  echo "make k3s-vm-lab destroy ${CLUSTER_NAME}"
+  echo ""
+  log_info "Markdown report: $(report_file_for "${cluster_name}")"
 }

@@ -24,6 +24,12 @@ EOF
     fi
     exit 0
     ;;
+  stop)
+    if [[ -n "${MOCK_MULTIPASS_LOG:-}" ]]; then
+      echo "stop ${name}" >> "${MOCK_MULTIPASS_LOG}"
+    fi
+    exit 0
+    ;;
   purge)
     if [[ -n "${MOCK_MULTIPASS_LOG:-}" ]]; then
       echo "purge" >> "${MOCK_MULTIPASS_LOG}"

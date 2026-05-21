@@ -18,6 +18,7 @@ mkdir -p "${HOME}/.kube"
 set +e
 {
   printf 'fail-lab\n'
+  printf '2\n'
   printf '1\n'
   printf '1\n'
   printf '1\n'

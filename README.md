@@ -7,7 +7,7 @@ This project is intentionally not a generic k3s builder. It is an all-in-one loc
 ## Requirements
 
 - macOS or Linux
-- `chien-dev` from `dev-environment-setup`
+- `chien-dev` from [dev-environment-setup](https://github.com/pong1013/dev-environment-setup)
 - Multipass
 - OpenSSH client
 - `kubectl`
@@ -32,9 +32,9 @@ make k3s-vm-lab destroy my-lab
 During `build`, the CLI asks for:
 
 - cluster name, if not provided in the command
-- worker node count, in addition to the fixed `1 control-plane/server` node
+- total node count, including the fixed `1 control-plane/server` node
 - Ubuntu version for every VM node
-- resource profile for both control-plane/server and worker nodes: `small`, `medium`, `large`, or `custom`
+- resource size for each node, with explicit CPU/RAM/disk values or custom values
 - whether to install `fake-gpu-operator` after the cluster is ready
 
 Example interactive build:
@@ -46,17 +46,23 @@ make k3s-vm-lab build my-lab
  k3s-vm-lab | VM-backed local k3s lab
 ==============================================
 This build creates one k3s control-plane/server VM plus worker VMs.
-Control-plane/server node count: 1 fixed
-Worker node count, in addition to the control-plane/server [1]:
+Total node count, including the control-plane/server (default=2):
 Select Ubuntu version for all VM nodes:
   1) 22.04
   2) 24.04
 Enter option number: 1
-Select resource profile for control-plane/server and workers:
-  1) small
-  2) medium
-  3) large
-  4) custom
+Host capacity
+  CPU:       8 cores
+  RAM:       24G
+  Free disk: 386G
+  Reserve:   2 CPU / 4G RAM / 20G disk
+
+Resources for my-lab-server-1 (server)
+Select resource size:
+  1) small - 2 CPU / 2G RAM / 20G disk
+  2) medium - 2 CPU / 4G RAM / 30G disk
+  3) large - 4 CPU / 8G RAM / 40G disk
+  4) custom - enter CPU, RAM, and disk
 Enter option number: 1
 Install fake-gpu-operator after the cluster is ready? [y/N]:
 ```
@@ -70,14 +76,18 @@ Node names are deterministic:
 
 ## Resource Profiles
 
-| Profile | Server | Worker |
-| --- | --- | --- |
-| small | 2 CPU / 2G RAM / 20G disk | 2 CPU / 2G RAM / 20G disk |
-| medium | 2 CPU / 4G RAM / 30G disk | 2 CPU / 4G RAM / 30G disk |
-| large | 4 CPU / 8G RAM / 40G disk | 4 CPU / 8G RAM / 40G disk |
-| custom | prompted | prompted |
+| Size | Resources |
+| --- | --- |
+| small | 2 CPU / 2G RAM / 20G disk |
+| medium | 2 CPU / 4G RAM / 30G disk |
+| large | 4 CPU / 8G RAM / 40G disk |
+| custom | prompted CPU / RAM / disk |
 
-The build checks host capacity before creating VMs and reserves at least `2 CPU + 4G RAM + 20G disk` for the host.
+The build shows host CPU, RAM, and free disk before resource selection. It checks the sum of all node resources before creating VMs and reserves at least `2 CPU + 4G RAM + 20G disk` for the host.
+
+## Destroy Safety
+
+`destroy` is staged. For a ready cluster, it first asks to stop VM nodes and records `destroy-stopped`. It then asks again before deleting VM nodes, purging Multipass, backing up `~/.kube/config`, removing only the kube context/cluster/user recorded in the k3s-vm-lab index, and removing generated files. If you cancel the second confirmation, rerun `destroy <cluster-name>` later to resume deletion.
 
 ## Generated Files
 
@@ -85,6 +95,12 @@ Cluster files are written under:
 
 ```text
 ~/.k3s-vm-lab/generated/clusters/<cluster-name>/
+```
+
+The cluster index is written to:
+
+```text
+~/.k3s-vm-lab/generated/clusters.tsv
 ```
 
 Important files:
@@ -104,7 +120,7 @@ The user kubeconfig is backed up before merge:
 The generated context is:
 
 ```text
-k3s-vm-lab-<cluster-name>
+k3s-vm-lab-<cluster-name>-<cluster-id>
 ```
 
 ## Development

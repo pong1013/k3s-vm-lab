@@ -50,11 +50,27 @@ vm_state() {
   fi
 }
 
+stop_vm_node() {
+  local name="$1"
+  if multipass info "${name}" >/dev/null 2>&1; then
+    log_info "Stopping VM node ${name}"
+    multipass stop "${name}"
+  fi
+}
+
 delete_vm_node() {
   local name="$1"
   if multipass info "${name}" >/dev/null 2>&1; then
     log_info "Deleting VM node ${name}"
     multipass delete "${name}" >/dev/null 2>&1 || true
+  fi
+}
+
+delete_vm_node_required() {
+  local name="$1"
+  if multipass info "${name}" >/dev/null 2>&1; then
+    log_info "Deleting VM node ${name}"
+    multipass delete "${name}" >/dev/null 2>&1
   fi
 }
 

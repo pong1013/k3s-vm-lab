@@ -23,6 +23,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ -n "${MOCK_KUBECTL_LOG:-}" ]]; then
+  printf "kubectl --kubeconfig=%s %s\n" "${kubeconfig}" "${args[*]}" >> "${MOCK_KUBECTL_LOG}"
+fi
+
 if [[ "${args[*]}" == *"config view"* && "${args[*]}" == *"certificate-authority-data"* ]]; then
   echo "Q0E="
 elif [[ "${args[*]}" == *"config view"* && "${args[*]}" == *"client-certificate-data"* ]]; then
@@ -37,11 +41,63 @@ elif [[ "${args[*]}" == config\ set-context* ]]; then
   echo "context" >> "${kubeconfig}"
 elif [[ "${args[*]}" == config\ use-context* ]]; then
   exit 0
+elif [[ "${args[*]}" == config\ get-contexts* ]]; then
+  wanted="${args[2]:-}"
+  while IFS= read -r context_name; do
+    if [[ "${context_name}" == "${wanted}" ]]; then
+      echo "${context_name}"
+    fi
+  done <<< "${MOCK_KUBECTL_CONTEXTS:-}"
+elif [[ "${args[*]}" == config\ delete-context* ]]; then
+  exit 0
+elif [[ "${args[*]}" == config\ delete-cluster* ]]; then
+  exit 0
+elif [[ "${args[*]}" == config\ delete-user* ]]; then
+  exit 0
 elif [[ "${args[*]}" == config\ view* ]]; then
   echo "apiVersion: v1"
   echo "kind: Config"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get pods --no-headers"* && "${MOCK_FAKE_GPU_PODS_DELAY:-false}" == "true" ]]; then
+  counter_file="${MOCK_FAKE_GPU_COUNTER_FILE:-/tmp/k3s-vm-lab-fake-gpu-counter}"
+  count=0
+  [[ -f "${counter_file}" ]] && count="$(cat "${counter_file}")"
+  count=$(( count + 1 ))
+  echo "${count}" > "${counter_file}"
+  if (( count < 2 )); then
+    exit 0
+  fi
+  echo "fake-gpu-pod 1/1 Running"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get pods --no-headers"* ]]; then
+  echo "fake-gpu-pod 1/1 Running"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get deployment -o name"* ]]; then
+  echo "deployment.apps/kwok-gpu-device-plugin"
+  echo "deployment.apps/status-updater"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get daemonset -o name"* ]]; then
+  echo "daemonset.apps/device-plugin"
+  echo "daemonset.apps/nvidia-dcgm-exporter"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator rollout status deployment"* && "${MOCK_FAKE_GPU_ROLLOUT_FAIL:-false}" == "true" ]]; then
+  echo "mock fake-gpu deployment rollout failure" >&2
+  exit 1
+elif [[ "${args[*]}" == *"-n fake-gpu-operator rollout status daemonset"* && "${MOCK_FAKE_GPU_ROLLOUT_FAIL:-false}" == "true" ]]; then
+  echo "mock fake-gpu daemonset rollout failure" >&2
+  exit 1
+elif [[ "${args[*]}" == *"-n fake-gpu-operator rollout status"* ]]; then
+  echo "rollout complete"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator wait"* && "${MOCK_FAKE_GPU_WAIT_FAIL:-false}" == "true" ]]; then
+  echo "mock fake-gpu wait failure" >&2
+  exit 1
 elif [[ "${args[*]}" == wait* ]]; then
   exit 0
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get pods"* ]]; then
+  echo "NAME READY STATUS"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get deployments"* ]]; then
+  echo "NAME READY UP-TO-DATE AVAILABLE AGE"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get daemonsets"* ]]; then
+  echo "NAME DESIRED CURRENT READY"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator get events"* ]]; then
+  echo "LAST SEEN TYPE REASON"
+elif [[ "${args[*]}" == *"-n fake-gpu-operator describe pods"* ]]; then
+  echo "Name: fake-gpu-mock"
 elif [[ "${args[*]}" == get\ nodes* ]]; then
   echo "NAME STATUS"
 else

@@ -17,6 +17,11 @@ test: syntax
 	@./tests/mock_build_test.sh
 	@./tests/mock_failure_cleanup_test.sh
 	@./tests/incomplete_cluster_test.sh
+	@./tests/cluster_index_test.sh
+	@./tests/custom_resources_test.sh
+	@./tests/safe_destroy_test.sh
+	@./tests/fake_gpu_failure_test.sh
+	@./tests/fake_gpu_wait_test.sh
 
 %:
 	@:

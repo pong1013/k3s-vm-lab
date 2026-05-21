@@ -11,6 +11,7 @@ SCRIPT_DIR="$(cd -P "$(dirname "${TARGET}")" >/dev/null 2>&1 && pwd)"
 
 source "${SCRIPT_DIR}/modules/log.sh"
 source "${SCRIPT_DIR}/modules/paths.sh"
+source "${SCRIPT_DIR}/modules/index.sh"
 source "${SCRIPT_DIR}/modules/validate.sh"
 source "${SCRIPT_DIR}/modules/prompt.sh"
 source "${SCRIPT_DIR}/modules/host.sh"

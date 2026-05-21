@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+if [[ -n "${MOCK_HELM_LOG:-}" ]]; then
+  printf "%s\n" "$*" >> "${MOCK_HELM_LOG}"
+fi
 exit 0

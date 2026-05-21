@@ -17,6 +17,8 @@ printf 'apiVersion: v1\nkind: Config\n' > "${HOME}/.kube/config"
 
 {
   printf 'mock-lab\n'
+  printf '3\n'
+  printf '1\n'
   printf '1\n'
   printf '1\n'
   printf '1\n'
@@ -27,7 +29,10 @@ test -f "${K3S_VM_LAB_HOME}/generated/clusters/mock-lab/report.md"
 test -f "${K3S_VM_LAB_HOME}/generated/clusters/mock-lab/kubeconfig"
 test -f "${HOME}/.kube/config"
 grep -q "Build status: ready" "${K3S_VM_LAB_HOME}/generated/clusters/mock-lab/report.md"
+grep -q "Total nodes: 3" "${K3S_VM_LAB_HOME}/generated/clusters/mock-lab/report.md"
 grep -q "mock-lab-server-1" "${K3S_VM_LAB_HOME}/generated/clusters/mock-lab/report.md"
 grep -q "mock-lab-worker-1" "${K3S_VM_LAB_HOME}/generated/clusters/mock-lab/report.md"
+grep -q "mock-lab-worker-2" "${K3S_VM_LAB_HOME}/generated/clusters/mock-lab/report.md"
+grep -q "step: Creating control-plane VM mock-lab-server-1" /tmp/k3s-vm-lab-test.out
 
 echo "mock build test passed"

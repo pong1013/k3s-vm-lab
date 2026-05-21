@@ -11,5 +11,5 @@ do_report() {
   validate_cluster_name "${cluster_name}"
   report_file="$(report_file_for "${cluster_name}")"
   [[ -f "${report_file}" ]] || die "Report not found: ${report_file}"
-  sed -n '1,240p' "${report_file}"
+  print_report_terminal "${cluster_name}"
 }

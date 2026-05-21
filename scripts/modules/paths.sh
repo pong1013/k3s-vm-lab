@@ -5,6 +5,10 @@ K3S_VM_LAB_HOME="${K3S_VM_LAB_HOME:-${HOME}/.k3s-vm-lab}"
 GENERATED_DIR="${K3S_VM_LAB_HOME}/generated"
 CLUSTERS_DIR="${GENERATED_DIR}/clusters"
 
+cluster_index_file() {
+  echo "${GENERATED_DIR}/clusters.tsv"
+}
+
 cluster_dir_for() {
   local cluster_name="$1"
   echo "${CLUSTERS_DIR}/${cluster_name}"

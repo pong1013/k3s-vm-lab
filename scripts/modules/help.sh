@@ -13,13 +13,14 @@ Usage:
   make k3s-vm-lab help
 
 Topology:
-  build creates 1 fixed control-plane/server VM plus the worker node count you choose.
+  build creates 1 fixed control-plane/server VM plus optional workers.
+  You choose the total node count, including the server.
 
 Commands:
   doctor   Check required local tools and host resources.
   build    Create Multipass VM nodes through chien-dev, install k3s, merge kubeconfig, and write a report.
-  status   Show VM and Kubernetes status for a cluster.
-  report   Print the generated Markdown report.
-  destroy  Delete cluster VM nodes and generated k3s-vm-lab files.
+  status   Show formatted VM and Kubernetes status for a cluster.
+  report   Show a formatted terminal report and keep report.md on disk.
+  destroy  Stop cluster VMs first, then optionally delete/purge them.
 EOF
 }
