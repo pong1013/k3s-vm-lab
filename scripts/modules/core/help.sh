@@ -7,7 +7,7 @@ k3s-vm-lab - VM-backed local k3s lab installer
 Usage:
   make k3s-vm-lab doctor
   make k3s-vm-lab build [cluster-name]
-  make k3s-vm-lab status [cluster-name]
+  make k3s-vm-lab status [cluster-name] [wide]
   make k3s-vm-lab report [cluster-name]
   make k3s-vm-lab start <cluster-name>
   make k3s-vm-lab stop <cluster-name>
@@ -22,7 +22,7 @@ Topology:
 Commands:
   doctor   Check required local tools and host resources.
   build    Create Multipass VM nodes through chien-dev, install k3s, merge kubeconfig, and write a report.
-  status   Show formatted VM and Kubernetes status for a cluster.
+  status   Show formatted VM and Kubernetes status for a cluster; add wide for raw node details.
   report   Show a formatted terminal report and keep report.md on disk.
   start    Start stopped cluster VMs and wait for Kubernetes nodes to become Ready.
   stop     Stop cluster VMs without deleting generated files or kubeconfig entries.

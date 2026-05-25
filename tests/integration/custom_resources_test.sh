@@ -11,6 +11,7 @@ export PATH="${ROOT_DIR}/tests/mocks:${PATH}"
 export K3S_VM_LAB_HOST_CPUS=16
 export K3S_VM_LAB_HOST_MEM_GB=64
 export K3S_VM_LAB_HOST_DISK_GB=500
+export MOCK_KUBECTL_LOG="${TMP_DIR}/kubectl.log"
 export NO_COLOR=1
 mkdir -p "${HOME}/.kube"
 
@@ -44,6 +45,23 @@ grep -q "step: Creating control-plane VM custom-lab-server-1" "${TMP_DIR}/build.
 
 "${ROOT_DIR}/scripts/k3s-vm-lab" report custom-lab >"${TMP_DIR}/report.out"
 grep -q "k3s-vm-lab report: custom-lab" "${TMP_DIR}/report.out"
+grep -q "Overview" "${TMP_DIR}/report.out"
+grep -q "Paths" "${TMP_DIR}/report.out"
+grep -q "Daily" "${TMP_DIR}/report.out"
+grep -q "Lifecycle" "${TMP_DIR}/report.out"
+grep -q "Raw diagnostics" "${TMP_DIR}/report.out"
 grep -q "custom-lab-worker-1" "${TMP_DIR}/report.out"
+
+before_wide_count="$(grep -c 'get nodes -o wide' "${MOCK_KUBECTL_LOG}" || true)"
+"${ROOT_DIR}/scripts/k3s-vm-lab" status custom-lab >"${TMP_DIR}/status.out"
+after_default_wide_count="$(grep -c 'get nodes -o wide' "${MOCK_KUBECTL_LOG}" || true)"
+test "${before_wide_count}" = "${after_default_wide_count}"
+grep -q "Kubernetes" "${TMP_DIR}/status.out"
+grep -q "2/2 Ready" "${TMP_DIR}/status.out"
+
+"${ROOT_DIR}/scripts/k3s-vm-lab" status custom-lab wide >"${TMP_DIR}/status-wide.out"
+after_wide_count="$(grep -c 'get nodes -o wide' "${MOCK_KUBECTL_LOG}" || true)"
+test "${after_wide_count}" -gt "${after_default_wide_count}"
+grep -q "Raw Kubernetes nodes" "${TMP_DIR}/status-wide.out"
 
 echo "custom resources test passed"

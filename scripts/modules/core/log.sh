@@ -29,6 +29,32 @@ paint() {
   fi
 }
 
+status_color() {
+  local status="$1"
+  case "${status}" in
+    ready|installed|Running|Ready|*Ready*)
+      if [[ "${status}" == *"NotReady"* ]]; then
+        echo "red"
+      else
+        echo "green"
+      fi
+      ;;
+    stopped|stopping|starting|disabled|Stopped) echo "yellow" ;;
+    failed|deleting|missing|Missing|NotReady|incomplete) echo "red" ;;
+    *) echo "blue" ;;
+  esac
+}
+
+paint_status() {
+  local status="$1"
+  paint "$(status_color "${status}")" "${status}"
+}
+
+section_title() {
+  paint bold "$1"
+  echo ""
+}
+
 console_fd() {
   if [[ "${K3S_VM_LAB_CONSOLE:-false}" == "true" ]]; then
     echo 3

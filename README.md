@@ -25,6 +25,7 @@ Run commands through `make` from the repo root:
 make k3s-vm-lab doctor
 make k3s-vm-lab build my-lab
 make k3s-vm-lab status my-lab
+make k3s-vm-lab status my-lab wide
 make k3s-vm-lab report my-lab
 make k3s-vm-lab start my-lab
 make k3s-vm-lab stop my-lab

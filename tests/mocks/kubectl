@@ -98,8 +98,17 @@ elif [[ "${args[*]}" == *"-n fake-gpu-operator get events"* ]]; then
   echo "LAST SEEN TYPE REASON"
 elif [[ "${args[*]}" == *"-n fake-gpu-operator describe pods"* ]]; then
   echo "Name: fake-gpu-mock"
+elif [[ "${args[*]}" == get\ nodes\ --no-headers* ]]; then
+  echo "mock-server Ready control-plane 1m v1.30.0+k3s1"
+  echo "mock-worker Ready <none> 1m v1.30.0+k3s1"
+elif [[ "${args[*]}" == get\ nodes\ -o\ wide* ]]; then
+  echo "NAME STATUS ROLES AGE VERSION INTERNAL-IP"
+  echo "mock-server Ready control-plane 1m v1.30.0+k3s1 192.168.64.10"
+  echo "mock-worker Ready <none> 1m v1.30.0+k3s1 192.168.64.11"
 elif [[ "${args[*]}" == get\ nodes* ]]; then
-  echo "NAME STATUS"
+  echo "NAME STATUS ROLES AGE VERSION"
+  echo "mock-server Ready control-plane 1m v1.30.0+k3s1"
+  echo "mock-worker Ready <none> 1m v1.30.0+k3s1"
 else
   exit 0
 fi
